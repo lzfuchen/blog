@@ -1,1 +1,5 @@
-# Hello VuePress
+---
+home: true
+---
+
+this is home
