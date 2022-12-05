@@ -1,106 +1,61 @@
-# Nginx
+# 基本概要
 
-Nginx 是一款轻量级的 Web 服务器、反向代理服务器，由于它的内存占用少，启动极快，高并发能力强，在互联网项目中广泛应用。
+Nginx 是一个开源且高性能、可靠的 HTTP 中间件，代理服务。可以做静态资源服务器，反向代理，负载平衡器和 HTTP 缓存。
 
-## 默认配置语法
+## 特点
 
-```shell
-# nginx.conf 默认配置文件
+- Nginx 采用的是多进程（单线程）+ 多路 IO 复用模型。
+- Nginx 采用的 I/O 多路复用模型 `epoll`。
+- CPU 亲和: 把 CPU 核心和 Nginx 工作进程绑定方式，把每个 worker 进程固定在一个 CPU 上执行，减少切换 CPU 的 cache miss，获得更好的性能
 
-#设置 nginx 服务的系统使用用户
-user  nginx;
-#工作进程数
-worker_processes  auto;
-#nginx 的错误日志
-error_log  /var/log/nginx/error.log notice;
-#nginx 服务启动时候的 pid
-pid        /var/run/nginx.pid;
+## 工作模式
 
-events {
-    #每个进程允许最大连接数
-    worker_connections  1024;
-}
-# 一个http下允许有多个server，一个server下允许有多个location
-http {
-    include       /etc/nginx/mime.types;
-    default_type  application/octet-stream;
-    #访问日志
-    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
-    #访问日志
-    access_log  /var/log/nginx/access.log  main;
+- Nginx 在启动后，会以 daemon 的方式在后台运行，后台进程包含一个 `master` 进程和多个相互独立的 `worker` 进程。工作进程以非特权用户运行。
+- `master` 进程主要用来管理 `worker` 进程，包含：接收来自外界的信号，向各 `worker` 进程发送信号，监控 `worker` 进程的运行状态，当 `worker` 进程退出后（异常情况下），会自动重新启动新的 `worker` 进程。
+- `worker` 进程则是处理基本的网络事件。多个 `worker` 进程之间是对等的，他们同等竞争来自客户端的请求，各进程互相之间是独立的。一个请求，只可能在一个 `worker` 进程中处理，一个 `worker` 进程，不可能处理其它进程的请求。
 
-    sendfile        on;
-    #tcp_nopush     on;
+工作线程处理实际的请求。Nginx 使用**基于事件**的模型和**依赖操作系统**的机制来有效地在工作进程之间分发请求。
 
-    #客户端和服务端链接超时时间默认65秒
-    keepalive_timeout  65;
+> worker 进程数，一般会设置成机器 CPU 核数。因为更多的 worker 数，只会导致进程相互竞争 CPU，从而带来不必要的上下文切换。
+> 使用多进程模式，不仅能提高并法率，而且进程之间相互独立，一个 worker 进程挂了不会影响其他 worker 进程。
 
-    #gzip  on;
+## 安装目录
 
-    # 加载目录下以.conf的nginx配置，
-    include /etc/nginx/conf.d/*.conf;
-}
+| 路径                                            | 类型           | 作用                                       |
+| ----------------------------------------------- | -------------- | ------------------------------------------ |
+| `/etc/nginx/conf.d`<br/>`/etc/nginx/nginx.conf` | 目录、配置文件 | nginx 配置文件                             |
+| `/var/cache/nginx`                              | 目录           | nginx 的缓存目录                           |
+| `/var/log/nginx`                                | 目录           | nginx 的日志目录                           |
+| `/usr/share/nginx/html`                         | 文件           | nginx 默认的静态资源目录                   |
+| `/etc/nginx/mime.types`                         | 配置文件       | 设置 HTTP 协议的 Content-Type 与扩展名对应 |
+
+## 常用命令
+
+```bash
+# 启动
+nginx
+
+# 启动并指定配置文件
+nginx -c /etc/nginx/nginx.conf
+
+# 立即停止服务
+nginx -s stop
+
+# 优雅地停止服务
+nginx -s quit
+
+# 重载配置文件
+nginx -s reload
+
+# 指定配置文件
+nginx -s reload -c /etc/nginx/nginx.conf
+
+# 重启nginx 服务
+systemctl restart nginx.service
+
+# 检查配置文件是否有语法错误
+nginx -t
+
+# 检查指定的配置文件
+nginx -t -c /etc/nginx/nginx.conf
 ```
-
-```shell
-#/etc/nginx/conf.d/default.conf;
-server {
-    listen       80;
-    listen  [::]:80;
-    #域名地址
-    server_name  localhost;
-
-    #access_log  /var/log/nginx/host.access.log  main;
-
-    location / {
-        #资源存放目录
-        root   /usr/share/nginx/html;
-        #首页
-        index  index.html index.htm;
-    }
-
-    #error_page  404              /404.html;
-
-    # redirect server error pages to the static page /50x.html
-    #
-    error_page   500 502 503 504  /50x.html;
-    location = /50x.html {
-        root   /usr/share/nginx/html;
-    }
-
-    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
-    #
-    #location ~ \.php$ {
-    #    proxy_pass   http://127.0.0.1;
-    #}
-
-    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
-    #
-    #location ~ \.php$ {
-    #    root           html;
-    #    fastcgi_pass   127.0.0.1:9000;
-    #    fastcgi_index  index.php;
-    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
-    #    include        fastcgi_params;
-    #}
-
-    # deny access to .htaccess files, if Apache's document root
-    # concurs with nginx's one
-    #
-    #location ~ /\.ht {
-    #    deny  all;
-    #}
-}
-```
-
-## 虚拟主机
-
-通俗的讲：就是一个 nginx 配置多个服务
-
-- 所谓虚拟主机，在 Web 服务里就是一个独立的网站站点，这个站点对应独立的域名（也可能是 IP 或端口），具有独立的程序及资源，可以独立地对外提供服务供用户访问。
-- 在 Nginx 中，使用一个 server{} 标签来标
-  识一个虚拟主机，一个 Web 服务里可以有多个虚拟主机标签对，即可以同时支持多个虚拟主机站点。
-- 虚拟主机有三种类型：基于域名的虚拟主机、基于端口的虚拟主机、基于 IP 的虚拟主机。
-- 域名虚拟主机通过配置 server_name，端口和 IP 虚拟主机通过 listen 实现

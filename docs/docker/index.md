@@ -39,3 +39,11 @@ docker exec -it containerId /bin/bash
 #推出容器
 exit
 ```
+
+2. 如何从容器拷贝文件到宿主
+
+- docker cp [OPTIONS] [CONTAINER_ID]:[SRC_PATH] [DEST_PATH]
+
+```
+docker cp 40af075f65eb:/etc/nginx/nginx.conf /usr/local/etc/nginx/conf.d
+```
