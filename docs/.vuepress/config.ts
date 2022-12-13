@@ -23,26 +23,30 @@ export default defineUserConfig({
           }
         ]
       }
-    ],
-    sidebar: [
-      {
-        text: 'Nginx',
-        link: '/nginx/',
-        children: [
-          {
-            text: '基本概要',
-            link: '/nginx'
-          },
-          {
-            text: '静态资源服务器',
-            link: '/nginx/static-res-server'
-          },
-          {
-            text: '代理服务器',
-            link: '/nginx/proxy-server'
-          }
-        ]
-      }
     ]
+    // sidebar: [
+    //   {
+    //     text: 'Nginx',
+    //     link: '/nginx/',
+    //     children: [
+    //       {
+    //         text: '基本概要',
+    //         link: '/nginx'
+    //       },
+    //       {
+    //         text: '语法配置',
+    //         link: '/nginx/configuration-syntax'
+    //       },
+    //       {
+    //         text: '静态资源服务器',
+    //         link: '/nginx/static-res-server'
+    //       },
+    //       {
+    //         text: '代理服务器',
+    //         link: '/nginx/proxy-server'
+    //       }
+    //     ]
+    //   }
+    // ]
   })
 })
