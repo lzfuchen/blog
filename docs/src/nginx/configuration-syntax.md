@@ -458,7 +458,7 @@ server {
 
 示例一：
 
-```ngix
+```shell
 locaton / {
   try_files /app/cache/ $uri @fallback;
   index index.php index.html;
