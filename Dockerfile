@@ -16,6 +16,6 @@ FROM nginx:alpine
 
 COPY nginx.conf /etc/nginx
 
-COPY --from=builder /usr/src/app/docs/.vuepress/dist /usr/share/nginx/html
+COPY --from=builder /usr/src/app/docs/.vitepress/dist /usr/share/nginx/html
 
 EXPOSE 80

@@ -36,7 +36,8 @@ const sidebar = {
 }
 
 export default defineConfigWithTheme({
-  title: 'Vue.js',
+  title: '爬了个大坑',
+  description: '乐观生活，开心编码',
   srcDir: './src',
 
   themeConfig: {
