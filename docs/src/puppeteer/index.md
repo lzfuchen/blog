@@ -1,89 +1,35 @@
 # Puppeteer
 
-## 使用 puppeteer-core 对应版本 chromium 下载链接怎么找？
+[`官方文档`](https://pptr.dev/) | [`API`](https://pptr.dev/api/puppeteer.puppeteernode)
 
-打开 `node_modules/puppeteer-core/lib/esm/puppeteer/node/BrowserFetcher.js` 文件  
-搜索 `downloadURL` 看到如下代码，这个方法的返回值就是下载链接，接下来我们查找对应参数
-```js
-function downloadURL(product, platform, host, revision) {
-    const url = util.format(downloadURLs[product][platform], host, revision, archiveName(product, platform, revision));
-    return url;
-}
-```
+Puppeteer 是一个 Node 库，它提供了一个高级 API 来通过 DevTools 协议控制 Chromium 或 Chrome。Puppeteer 默认以 headless 模式运行，但是可以通过修改配置文件运行“有头”模式。  
 
-搜索 `downloadURLs` 看到如下代码
-```js
-const downloadURLs = {
-    chrome: {
-        linux: '%s/chromium-browser-snapshots/Linux_x64/%d/%s.zip',
-        mac: '%s/chromium-browser-snapshots/Mac/%d/%s.zip',
-        mac_arm: '%s/chromium-browser-snapshots/Mac_Arm/%d/%s.zip',
-        win32: '%s/chromium-browser-snapshots/Win/%d/%s.zip',
-        win64: '%s/chromium-browser-snapshots/Win_x64/%d/%s.zip',
-    },
-    firefox: {
-        linux: '%s/firefox-%s.en-US.%s-x86_64.tar.bz2',
-        mac: '%s/firefox-%s.en-US.%s.dmg',
-        win32: '%s/firefox-%s.en-US.%s.zip',
-        win64: '%s/firefox-%s.en-US.%s.zip',
-    },
-};
-```
-以 `mac chrome` 为例，丢赢链接如下：
-```text
-`%s/chromium-browser-snapshots/Linux_x64/%d/%s.zip`
-```
+## 能做什么？
 
-第二个参数查找 `browserConfig` 看到如下代码
-```js
-const browserConfig = {
-    chrome: {
-        host: 'https://storage.googleapis.com',
-    },
-    firefox: {
-        host: 'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central',
-    },
-};
-```
-替换第一个 `%s` 链接如下所示：
-```text
-https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/%d/%s.zip
-```
+浏览器中手动执行的绝大多数操作都可以使用 Puppeteer 来完成， 比如：
+- 生成页面 PDF、PNG、JPG
+- 自动提交表单，进行 UI 测试，键盘输入等
+- 创建一个时时更新的自动化测试环境。 使用最新的 JavaScript 和浏览器功能直接在最新版本的Chrome中执行测试。
 
-第三个参数 查找 `node_modules/puppeteer-core/lib/esm/puppeteer/revisions.js` 文件
+目前我司主要用到的功能就是将 html 页面生成 pdf
+
+## puppeteer-core
+
+`puppeteer-core` 是一个的轻量级的 `Puppeteer` 版本，用于启动现有浏览器安装或连接到远程安装  
+默认的 `puppeteer` 会下载 `Chromium`，`puppeteer-core` 不会
+
+
+## pdf 页面页脚踩的坑 
+
+要添加页眉页脚注意生成pdf方法选项的四个参数：`displayHeaderFooter`,`margin`,`headerTemplate`,`footerTemplate`
+- `displayHeaderFooter` 要设置为true
+- `headerTemplate`,`footerTemplate` 都要有值，比如我只有页脚，那么 `headerTemplate = ''` 可以等于空字符串，如果不设置会发现页脚也没有效果
+- `margin` 上下的margin也要设置不设置你会发现页眉页脚没有显示
+
+页脚如何显示pdf总页数和页码？
+
+通过两个css显示 `pageNumber` 页码，`totalPages` 总页数，比如：
 ```js
-export const PUPPETEER_REVISIONS = Object.freeze({
-    chromium: '1069273',
-    firefox: 'latest',
-});
+// 页脚 第x页，共x页
+const footerTemplate = `<span>第<span class="pageNumber"></span>页， 共<span class="totalPages"></span>页</span>`
 ```
-替换第二个 `%d` `URL` 如下所示：  
-```text
-https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/1069273/%s.zip
-```
-  
-第三个参数还是在 `BrowserFetcher.js` 下查找 `archiveName` 方法
-```js
-function archiveName(product, platform, revision) {
-    switch (product) {
-        case 'chrome':
-            switch (platform) {
-                case 'linux':
-                    return 'chrome-linux';
-                case 'mac_arm':
-                case 'mac':
-                    return 'chrome-mac';
-                case 'win32':
-                case 'win64':
-                    // Windows archive name changed at r591479.
-                    return parseInt(revision, 10) > 591479
-                        ? 'chrome-win'
-                        : 'chrome-win32';
-            }
-        case 'firefox':
-            return platform;
-    }
-}
-```
-最终结果如下:
-- `https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/1069273/chrome-mac.zip`

@@ -10,25 +10,26 @@ const nav = [
     text: 'Docker',
     activeMatch: `^/docker/`,
     link: '/docker/'
+  },
+  {
+    text: 'Puppeteer',
+    activeMatch: `^/puppeteer/`,
+    link: '/puppeteer/'
   }
 ]
 
 const sidebar = {
-  '/nginx/': [
+  '/puppeteer/': [
     {
-      text: 'Nginx',
+      text: 'Puppeteer',
       items: [
         {
-          text: '配置语法',
-          link: '/nginx/configuration-syntax'
+          text: 'chromium 下载链接',
+          link: '/puppeteer/download-url'
         },
         {
-          text: '静态资源服务器',
-          link: '/nginx/static-res-server'
-        },
-        {
-          text: '代理服务器',
-          link: '/nginx/proxy-server'
+          text: '服务端优化',
+          link: '/puppeteer/server-optimize'
         }
       ]
     }
