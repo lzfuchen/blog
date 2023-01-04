@@ -37,7 +37,7 @@ const sidebar = {
 }
 
 export default defineConfigWithTheme({
-  title: '爬了个大坑',
+  title: '我的爬坑心得',
   description: '乐观生活，开心编码',
   srcDir: './src',
 

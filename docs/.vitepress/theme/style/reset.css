@@ -1,0 +1,18 @@
+.VPHome .name {
+  max-width: none;
+  text-align: center;
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient( 315deg,#42d392 25%,#647eff);
+}
+.VPHome .text {
+  max-width: none;
+  text-align: center;
+  margin-top: 12px;
+}
+.VPHome .tagline {
+  max-width: none;
+  text-align: center;
+}
+.VPHome .actions{
+  justify-content: center;
+}
