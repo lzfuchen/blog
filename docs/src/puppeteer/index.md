@@ -11,8 +11,6 @@ Puppeteer 是一个 Node 库，它提供了一个高级 API 来通过 DevTools �
 - 自动提交表单，进行 UI 测试，键盘输入等
 - 创建一个时时更新的自动化测试环境。 使用最新的 JavaScript 和浏览器功能直接在最新版本的Chrome中执行测试。
 
-目前我司主要用到的功能就是将 html 页面生成 pdf
-
 ## puppeteer-core
 
 `puppeteer-core` 是一个的轻量级的 `Puppeteer` 版本，用于启动现有浏览器安装或连接到远程安装  

@@ -266,3 +266,104 @@ REVOKE 权限列表 ON 数据库名.表名 FROM '用户名'@'主机名';
 | DATEDIFF(date1,date2) | 返回起始时间date1和结束时间date2之间的天数 | 
 
 ### 流程函数
+
+| 函数 | 功能 |
+|---|---|
+| IF(value,t,f) | 如果value为true，则返回t，否则返回f | 
+| IFNULL(value1, value2) | 如果value1不为空，返回value1，否则返回value2 | 
+| CASE WHEN [val1] THEN [res1] ... ELSE [default] END | 如果val1为true，返回res1，...否则返回default默认值 |
+| CASE [expr] WHEN [val1] THEN [res1] ... ELSE [default] END | 如果expr的值等于val1，返回res1，...否则返回default默认值 | 
+
+## 约束
+
+* 概念：约束是作用域表中字段上的规则，用于限制存储在表中的数据。
+* 目的：保证数据库中数据的正确、有效性和完整性
+
+| 约束 | 描述 | 关键字 |
+|---|---|---|
+| 非空约束 | 限制该字段的数据不能为null | NOT NULL | 
+| 唯一约束 | 保证该字段的所有数据都是唯一、不重复的 | UNIQUE |
+| 主键约束 | 主键是一行数据的唯一标识，要求非空且唯一 | PRIMARY KEY |
+| 默认约束 | 保存数据时，如果未指定该字段的值，则采用默认值 | DEFAULT |
+| 检查约束(8.0.16版本之后) | 保证字段值满足某一个条件 | CHECK |
+| 外键约束 | 用来让两张表的数据之间建立连接，保证数据的一致性和完成性 | FOREIGN KEY | 
+
+### 外键约束
+
+```sql
+-- 添加外键
+CREATE TABLE 表名(
+      字段名 数据类型,
+      ...
+      [CONSTRAINT] [外键名称] FOREIGN KEY(外键字段名) REFERENCES 主表(主表列名)
+);
+
+ALTER TABLE 表名 ADD CONSTRAINT 外键名称 FOREIGN KEY(外键字段名) REFERENCES 主表(主表列名);
+
+-- 删除外键
+ALTER TABLE 表名 DROP FOREIGN KEY 外键名称;
+```
+
+删除/更新行为
+
+| 行为 | 说明 |
+| --- | --- |
+| NO ACTION | 当在父表中删除/更新对应记录时，首先检查该记录是否有对应外键，如果有则不允许删除/更新(与 RESTRICT 一致) |
+| RESTRICT | 当在父表中删除/更新对应记录时，首先检查该记录是否有对应外键，如果有则不允许删除/更新(与 NO ACTION 一致) |
+| CASCADE |  当在父表中删除/更新对应记录时，首先检查该记录是否有对应外键，如果有则也删除/更新外键在子表中的记录 |
+| SET NULL | 当在父表中删除/更新对应记录时，首先检查该记录是否有对应外键，如果有则设置子表中该外键值为null（这要求外键允许为null）|
+| SET DEFAULT | 父表有变更时，子表将外键列设置成一个默认的值（Innodb 不支持）|
+
+```sql
+ALTER TABLE 表名 ADD CONSTRAINT 外键名称 FOREIGN KEY(外键字段名) REFERENCES 主表(主表列名) ON UPDATE CASCADE ON DELETE CASCADE;
+```
+
+## 多表查询
+
+项目开发中，在进行数据库结构设计时，会根据业务需求及业务模块之间的关系，分析并设计表结构，由于业务之间相互关联，所以各个表结构之间也存在着各种联系，基本上分为三种：
+
+### 多表关系
+
+* 一对多（多对一）：在多的一方建立外键，指向一的一方的主键
+* 多对多：建立第三张中间表，中间表至少包含两个外键，分别关联两方的主键
+* 一对一：多用于单表拆分，将一张表的基础字段放在一张表中，其它详情字段放在另一张表中，以提升操作效率。在任意一方加入外键，关联另外一方的主键，并且设置外键为唯一的(UNIQUE)  
+
+### 多表查询概述
+
+多表查询分类  
+连接查询  
+&emsp;&emsp;内连接：相当于查询A,B交集部门数据  
+&emsp;&emsp;外连接：  
+&emsp;&emsp;&emsp;&emsp;左外连接：查询左表所有数据，以及两张表交集部分数据  
+&emsp;&emsp;&emsp;&emsp;右外连接：查询右表所有数据，以及两张表交集部分数据  
+&emsp;&emsp;自连接：当前表与自身的连接查询，自连接必须使用表别名  
+
+子查询
+
+### 内连接
+
+查询的是两张表交集的部分
+
+隐式内连接
+```sql
+SELECT 字段列表 FROM 表1, 表2 WHERE 条件...;
+```
+显示内连接
+```sql
+SELECT 字段列表 FROM 表1 [INNER] JOIN 表2 ON 连接条件...;
+```
+
+### 外连接
+
+左外连接
+```sql
+SELECT 字段列表 FROM 表1 LEFT [OUTER] JOIN 表2 ON 条件...;
+```
+
+右外连接
+```sql
+SELECT 字段列表 FROM 表1 RIGHT [OUTER] JOIN 表2 ON 条件...;
+```
+### 自连接
+
+### 子查询

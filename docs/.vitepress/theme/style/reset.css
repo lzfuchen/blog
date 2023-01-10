@@ -16,3 +16,7 @@
 .VPHome .actions{
   justify-content: center;
 }
+
+.VPFooter{
+  padding: 12px 0 !important;
+}

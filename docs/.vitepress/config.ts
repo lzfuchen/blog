@@ -43,6 +43,9 @@ export default defineConfigWithTheme({
 
   themeConfig: {
     nav,
-    sidebar
+    sidebar,
+    footer: {
+      copyright: `<div><a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61042402000124" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;"><img src="/beian.png" style="float:left;"/><p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">陕公网安备 61042402000124号</p></a></div>`
+    }
   }
 })
