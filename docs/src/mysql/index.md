@@ -339,6 +339,7 @@ ALTER TABLE 表名 ADD CONSTRAINT 外键名称 FOREIGN KEY(外键字段名) REFE
 &emsp;&emsp;自连接：当前表与自身的连接查询，自连接必须使用表别名  
 
 子查询
+&emsp;&emsp; SQL语句中嵌套`SELECT`语句，成为嵌套查询，又称子查询
 
 ### 内连接
 
@@ -366,4 +367,87 @@ SELECT 字段列表 FROM 表1 RIGHT [OUTER] JOIN 表2 ON 条件...;
 ```
 ### 自连接
 
+```sql
+SELECT 字段列表 FROM 表1 别名A JOIN 表A 别名B ON 条件...;
+```
+
+联合查询
+ 
+对于`union`查询，就是把多次查询的结果合并起来，形成一个新的查询结果集，多张表的列表列数必须保持一致，字段类型也需要保持一致  
+`union all` 会将全部的数据直接合并在一起，`union`会对合并之后的数据去重
+
+```sql
+SELECT 字段列表 FROM 表A
+UNION [ALL]
+SELECT 字段列表 FROM 表B
+```
+
 ### 子查询
+
+```sql
+SELECT * FROM t1 WHERE column1 = (SELECT column1 FROM t2);
+```
+* 子查询外部的语句可以是`INSERT`/`UPDATE`/`DELETE`/`SELECT`的任何一个
+
+根据子查询结果不同，分为：  
+* 标量子查询（子查询结果为单个值）  
+* 列子查询（子查询结果为一列）：常用操作符 `IN`、`NOT IN`、`ANY`、`SOME`、`ALL`  
+* 行子查询（子查询结果为一行）：常用操作符 `=`、`<>`、`IN`、`NOT IN`  
+* 表子查询（子查询结果为多行多列）常用操作符 `IN`  
+
+根据子查询位置，分为：`WHERE`之后、`FROM`之后、`SELECT`之后  
+
+| 操作符 | 描述 |
+| --- | --- |
+| IN | 在指定的集合范围之内，多选一 |
+| NOT IN | 不在指定的集合范围之内 |
+| ANY | 子查询返回列表中，有任意一个满足即可 |
+| SOME | 与ANY等同，使用SOME的地方都可以使用ANY |
+| ALL | 子查询返回列表的所有值都必须满足 |
+
+## 事务
+
+ `事务`是一组操作的集合，它是一个不可分割的工作单位，事务会把所有的操作作为一个整体一起向系统提交或撤销操作请求，即这些操作`要么同时成功，要么同时失败`  
+
+ 查看/设置事务提交方式
+ ```sql
+SELECT @@autocommit;
+--  0：手动提交， 1：自动提交
+SET @@autocommit = 0;
+--  手动开启事务
+start transaction 
+-- 提交事务
+COMMIT;
+-- 回滚事务
+ROLLBACK;
+ ```
+
+ 事务四大特性：  
+ * 原子性(Atomicity)：事务是不可分割的最小操作单元，要么全部成功，要么全部失败
+ * 一致性(Consistency)：事务完成时，必须使所有的数据都保持一致状态
+ * 隔离性(Isolation)：数据库系统提供的隔离机制，保证事务在不受外部并发操作影响的独立环境运行
+ * 持久性(Durability)：事务一旦提交或回滚，它对数据库中的数据的改变就是永久的  
+
+ 并发事务问题
+
+ | 问题 | 描述 |
+ | --- | --- |
+ | 脏读 | 一个事务读到另外一个事务还没有提交的数据 |
+ | 不可重复读 | 一个事务先后读取同一条记录，但两次读取的数据不同，称之为不可重复读 |
+ | 幻读 | 一个事物按照查询条件查询数据时，没有对应的数据行，但是在插入数据时，又发现这行数据已经存在 | 
+
+ 事务隔离级别
+
+| 隔离级别 | 脏读 | 不可重复读 | 幻读 |
+| --- | :---: | :---: | :---: |
+| Read uncommitted | ✅ | ✅ | ✅ |
+| Read committed | ❌ | ✅ | ✅ |
+| Repeatable Read(默认) | ❌ | ❌ | ✅ |
+| Serializable | ❌ | ❌ | ❌ |
+
+```sql
+-- 查看事务隔离级别
+SELECT @@TRANSACTION_ISOLATION;
+-- 设置事务隔离级别
+SET [SESSION|GLOBAL] TRANSACTION ISOLATION LEVEL [READ UNCOMMITTED | READ COMMITTED | REPEATABLE-READ | SERIALIZABLE];
+```
