@@ -15,6 +15,11 @@ const nav = [
     text: 'Puppeteer',
     activeMatch: `^/puppeteer/`,
     link: '/puppeteer/'
+  },
+  {
+    text: 'MySQL',
+    activeMatch: `^/mysql/`,
+    link: '/mysql/'
   }
 ]
 
@@ -30,6 +35,21 @@ const sidebar = {
         {
           text: '服务端优化',
           link: '/puppeteer/server-optimize'
+        }
+      ]
+    }
+  ],
+  '/mysql/': [
+    {
+      text: 'MySQL',
+      items: [
+        {
+          text: '基础',
+          link: '/mysql/'
+        },
+        {
+          text: '进阶',
+          link: '/mysql/advanced'
         }
       ]
     }
