@@ -67,7 +67,7 @@ export default defineConfigWithTheme({
     nav,
     sidebar,
     footer: {
-      copyright: `<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61042402000124" style="display:flex;align-item:center;line-height:20px;"><img src="/beian.png"/><span style="margin-left:5px; color:#939393;">陕公网安备 61042402000124号</span></a>`
+      copyright: `<a href="https://beian.miit.gov.cn/" target="_blank">陕ICP备2022014397号-1</a><a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61042402000124" style="display:flex;align-item:center;line-height:20px;"><img src="/beian.png"/><span style="margin-left:5px; color:#939393;">陕公网安备 61042402000124号</span></a>`
     }
   }
 })
