@@ -2,6 +2,11 @@ import { defineConfigWithTheme, ThemeOptions } from 'vitepress'
 
 const nav = [
   {
+    text: 'Vue2',
+    activeMatch: `^/vue2/`,
+    link: '/vue2/',
+  },
+  {
     text: 'Nginx',
     activeMatch: `^/nginx/`,
     link: '/nginx/'
@@ -53,6 +58,17 @@ const sidebar = {
         }
       ]
     }
+  ],
+  '/vue2/': [
+    {
+      text: 'Vue2.7.14',
+      items: [
+        {
+          text: 'keep-alive',
+          link: '/vue2/keep-alive'
+        }
+      ]
+    }
   ]
 }
 
@@ -65,9 +81,6 @@ export default defineConfigWithTheme({
   },
   themeConfig: {
     nav,
-    sidebar,
-    footer: {
-      copyright: `<a href="https://beian.miit.gov.cn/" target="_blank">陕ICP备2022014397号-1</a><a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=61042402000124" style="display:flex;align-item:center;line-height:20px;"><img src="/beian.png"/><span style="margin-left:5px; color:#939393;">陕公网安备 61042402000124号</span></a>`
-    }
+    sidebar
   }
 })
